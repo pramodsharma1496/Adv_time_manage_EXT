@@ -1,7 +1,7 @@
 let timerId = null;
 let isTimerRunning = false;
-let workDuration = 1 * 60; // 25 minutes
-let breakDuration = 1 * 60; // 5 minutes
+let workDuration = 25 * 60; // 25 minutes
+let breakDuration = 5 * 60; // 5 minutes
 let tasks = []; // Array to store the tasks
 
 function startTimer(duration, isBreak) {
@@ -31,8 +31,6 @@ function startTimer(duration, isBreak) {
         });
         startTimer(workDuration, false); // Start work time
       } else {
-        tasks.shift(); // Remove the completed task
-
         if (tasks.length > 0) {
           chrome.notifications.create({
             type: "basic",
@@ -78,5 +76,12 @@ chrome.runtime.onMessage.addListener(function (request) {
     const task = request.task;
     tasks.push(task);
     chrome.runtime.sendMessage({ action: "updateTaskList", taskList: tasks });
+  } else if (request.action === "removeTask") {
+    const task = request.task;
+    const taskIndex = tasks.indexOf(task);
+    if (taskIndex !== -1) {
+      tasks.splice(taskIndex, 1);
+      chrome.runtime.sendMessage({ action: "updateTaskList", taskList: tasks });
+    }
   }
 });
