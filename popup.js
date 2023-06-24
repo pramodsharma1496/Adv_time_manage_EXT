@@ -7,10 +7,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
   startButton.addEventListener("click", function () {
     chrome.runtime.sendMessage({ action: "startTimer" });
+    addTaskButton.disabled = true; // Disable addTaskButton when timer starts
   });
 
   stopButton.addEventListener("click", function () {
     chrome.runtime.sendMessage({ action: "stopTimer" });
+    addTaskButton.disabled = false; // Enable addTaskButton when timer stops
   });
 
   addTaskButton.addEventListener("click", function () {
@@ -23,9 +25,22 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   function addTaskToList(task) {
-    const li = document.createElement("li");
-    li.textContent = task;
-    taskList.appendChild(li);
+    const taskItem = document.createElement("li");
+    const taskNumber = taskList.children.length + 1; // Get the number of tasks
+    taskItem.textContent = `${taskNumber}. ${task}`; // Add number in front of task
+    taskList.appendChild(taskItem);
+    createRemoveButton(taskItem, task); // Add remove button for the task
+  }
+
+  function createRemoveButton(taskElement, task) {
+    const removeButton = document.createElement("button");
+    removeButton.textContent = "x";
+    removeButton.className = "removeButton";
+    removeButton.addEventListener("click", function () {
+      taskList.removeChild(taskElement);
+      chrome.runtime.sendMessage({ action: "removeTask", task: task });
+    });
+    taskElement.appendChild(removeButton);
   }
 
   chrome.runtime.onMessage.addListener(function (request) {
