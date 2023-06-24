@@ -1,7 +1,8 @@
 let timerId = null;
 let isTimerRunning = false;
-let workDuration = 25 * 60; // 25 minutes
-let breakDuration = 5 * 60; // 5 minutes
+let workDuration = 1 * 60; // 25 minutes
+let breakDuration = 1 * 60; // 5 minutes
+let tasks = []; // Array to store the tasks
 
 function startTimer(duration, isBreak) {
   let timer = duration;
@@ -20,13 +21,36 @@ function startTimer(duration, isBreak) {
     if (--timer < 0) {
       clearInterval(timerId);
       isTimerRunning = false;
-      chrome.notifications.create({
-        type: "basic",
-        iconUrl: "icon.png",
-        title: "Focus Timer",
-        message: isBreak ? "Work time! Stay focused." : "Break time! Take a short break.",
-      });
-      startTimer(isBreak ? workDuration : breakDuration, !isBreak);
+
+      if (isBreak) {
+        chrome.notifications.create({
+          type: "basic",
+          iconUrl: "icon.png",
+          title: "Focus Timer",
+          message: "Work time! Stay focused.",
+        });
+        startTimer(workDuration, false); // Start work time
+      } else {
+        tasks.shift(); // Remove the completed task
+
+        if (tasks.length > 0) {
+          chrome.notifications.create({
+            type: "basic",
+            iconUrl: "icon.png",
+            title: "Focus Timer",
+            message: "Break time! Take a short break.",
+          });
+          startTimer(breakDuration, true); // Start break time
+        } else {
+          chrome.notifications.create({
+            type: "basic",
+            iconUrl: "icon.png",
+            title: "Focus Timer",
+            message: "Work completed!",
+          });
+          stopTimer();
+        }
+      }
     }
   }, 1000);
 }
@@ -39,8 +63,20 @@ function stopTimer() {
 
 chrome.runtime.onMessage.addListener(function (request) {
   if (request.action === "startTimer" && !isTimerRunning) {
-    startTimer(workDuration, false); // Start with work time
+    if (tasks.length > 0) {
+      chrome.notifications.create({
+        type: "basic",
+        iconUrl: "icon.png",
+        title: "Focus Timer",
+        message: "Work time! Stay focused.",
+      });
+      startTimer(workDuration, false); // Start work time
+    }
   } else if (request.action === "stopTimer") {
     stopTimer();
+  } else if (request.action === "addTask") {
+    const task = request.task;
+    tasks.push(task);
+    chrome.runtime.sendMessage({ action: "updateTaskList", taskList: tasks });
   }
 });
