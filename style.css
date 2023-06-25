@@ -2,15 +2,32 @@ body {
   font-family: Arial, sans-serif;
   padding: 10px;
   width: 200px;
+  background-color: #f3f3f3;
 }
 
 h1 {
-  font-size: 20px;
+  font-size: 24px;
   margin: 10px 0;
+  color: #333;
 }
 
 #taskInput {
   margin-bottom: 10px;
+}
+
+#taskText {
+  padding: 5px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+}
+
+#addTaskButton {
+  padding: 5px 10px;
+  font-size: 14px;
+  background-color: #4caf50;
+  color: #fff;
+  border: none;
+  cursor: pointer;
 }
 
 #taskList {
@@ -26,5 +43,35 @@ li {
 .removeButton {
   font-size: 10px;
   padding: 2px 5px;
+  background-color: #f44336;
+  color: #fff;
+  border: none;
+  cursor: pointer;
 }
 
+#startButton,
+#stopButton {
+  padding: 8px 16px;
+  font-size: 16px;
+  background-color: #2196f3;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+}
+
+#startButton:hover,
+#stopButton:hover,
+#addTaskButton:hover,
+.removeButton:hover {
+  opacity: 0.8;
+}
+
+.time-container {
+  display: flex;
+  align-items: center;
+}
+
+.start-time,
+.end-time {
+  margin-right: 10px;
+}
