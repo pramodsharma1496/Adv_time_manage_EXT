@@ -10,7 +10,7 @@ def access_sensitive_data():
     secret_key = os.getenv("SECRET_KEY")
     if secret_key:
         print("Accessing sensitive data with secret key:", secret_key)
-        print("test")
+        print("test pramod")
     else:
         print("Error: Secret key not found.")
 
